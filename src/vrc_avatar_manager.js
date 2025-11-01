@@ -114,6 +114,10 @@ class VrcAvatarManager extends EventEmitter {
 		// we're not updating the currentAvatar here. it will get updated soon after the game sends the update back to us
 	}
 
+	async setAvatar(avatarId) {
+		await this._osc.sendMessage("/avatar/change", avatarId, "string");
+	}
+
 	async registerNewParameter({ avid, paramName, inputAddress, outputAddress }) {
 		if (!(avid in this._avatars)) {
 			this._avatars[avid] = {};

@@ -38,4 +38,11 @@ boardRouter.get("/current-avatar", function(req, res) {
 	}
 });
 
+boardRouter.get("/change/:avatarId", async (req, res) => {
+	const avatarId = req.params.avatarId;
+
+	const originalId = avatarManager.unhashAvatarId(avatarId);
+	await avatarManager.setAvatar(originalId);
+});
+
 module.exports = { boardRouter };
