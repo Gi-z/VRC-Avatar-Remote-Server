@@ -122,14 +122,18 @@ class SocketManager {
 			this._io.to(key).emit("parameter", evt);
 		});
 
-		// evt = { id }
+		// magic fix to solve multiple clients observing avatar changes
+		// the evt object was being modified directly, which broke the subsequent checks after the first one
+		// we separate the hashedId now and it works just fine
 		this._avatarManager.on("avatar", evt => {
+			const originalId = evt.id;
+			const hashedId = this._avatarManager.hashAvatarId(originalId);
+
 			for (let socketId in this._sockets) {
-				if (this._sockets[socketId].board.hasAvatar(evt.id)) {
-					evt.id = this._avatarManager.hashAvatarId(evt.id);
-					this._sockets[socketId].socket.emit("avatar", evt);
+				if (this._sockets[socketId].board.hasAvatar(originalId)) {
+					this._sockets[socketId].socket.emit("avatar", {id: hashedId});
 				} else {
-					this._sockets[socketId].socket.emit("avatar", null); // tell this socket that we are now in an unknown avatar
+					this._sockets[socketId].socket.emit("avatar", null);
 				}
 			}
 		});
