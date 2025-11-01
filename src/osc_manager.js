@@ -68,6 +68,9 @@ class OscManager extends EventEmitter {
 			case "float":
 				sendValue = Number(value);
 				break;
+			case "string":
+				sendValue = String(value);
+				break;
 			default:
 				throw new Error(`Invalid OSC type ${type}`);
 		}	
