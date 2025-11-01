@@ -9,6 +9,8 @@
       <div v-else>
         <h1>{{ board.name }}</h1>
 
+        <n-select :on-update:value="changeAvatar" :value="avatarId" :options="swappableAvatars" placeholder="Select avatar"></n-select>
+
         <h2 v-if="avatarId === null">The currently selected avatar has no controls on this board</h2>
 
         <template v-if="currentAvatar !== null">
@@ -91,6 +93,11 @@ export default {
     }
   },
   computed: {
+    swappableAvatars() {
+      return Object.entries(this.board.avatars).map(entry => {
+        return { label: entry[1].name, value: entry[0] };
+      });
+    },
     boardId() {
       if (window.location.pathname === "/") {
         return "default";
@@ -126,6 +133,9 @@ export default {
 
       const resp = await axios.get(`/api/b/${this.boardId}/full`);
       this.board = resp.data.board;
+    },
+    async changeAvatar(avatarId) {
+      await axios.get(`/api/b/${this.boardId}/change/${avatarId}`);
     },
     setupSocket() {
       if (this.boardId == null || !this.loggedIn) return;
